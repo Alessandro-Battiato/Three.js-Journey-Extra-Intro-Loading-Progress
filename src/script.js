@@ -6,13 +6,19 @@ import gsap from "gsap";
 /**
  * Loaders
  */
+const loadingBarElement = document.querySelector(".loading-bar");
+
 const loadingManager = new THREE.LoadingManager(
     // Loaded
     () => {
         gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 });
     },
     // Progress
-    () => {}
+    (itemUrl, itemsLoaded, itemsTotal) => {
+        // const loadingBarElement = document.querySelector(".loading-bar"); this is a common pitfall, do not select the node here
+        const progressRatio = itemsLoaded / itemsTotal;
+        loadingBarElement.style.transform = `scaleX(${progressRatio})`;
+    }
     // Errors (not implemented)
 );
 const gltfLoader = new GLTFLoader(loadingManager);
