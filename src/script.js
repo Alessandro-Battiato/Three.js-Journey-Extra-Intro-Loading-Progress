@@ -1,12 +1,22 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import gsap from "gsap";
 
 /**
  * Loaders
  */
-const gltfLoader = new GLTFLoader();
-const cubeTextureLoader = new THREE.CubeTextureLoader();
+const loadingManager = new THREE.LoadingManager(
+    // Loaded
+    () => {
+        gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 });
+    },
+    // Progress
+    () => {}
+    // Errors (not implemented)
+);
+const gltfLoader = new GLTFLoader(loadingManager);
+const cubeTextureLoader = new THREE.CubeTextureLoader(loadingManager);
 
 /**
  * Base
@@ -26,14 +36,19 @@ const scene = new THREE.Scene();
 const overlayGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
 const overlayMaterial = new THREE.ShaderMaterial({
     transparent: true,
+    uniforms: {
+        uAlpha: { value: 1 }, // being in Javascript, we do not need to put 1.0, it won't raise any errors inside the shaders
+    },
     vertexShader: `
         void main() {
             gl_Position = vec4(position, 1.0);
         }
     `,
     fragmentShader: `
+        uniform float uAlpha;
+
         void main() {
-            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+            gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha);
         }
     `,
 });
