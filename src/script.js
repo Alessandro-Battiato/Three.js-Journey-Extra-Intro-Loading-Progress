@@ -23,11 +23,11 @@ const scene = new THREE.Scene();
 /**
  * Overlay
  */
-const overlayGeometry = new THREE.PlaneGeometry(1, 1, 1, 1);
+const overlayGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
 const overlayMaterial = new THREE.ShaderMaterial({
     vertexShader: `
         void main() {
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            gl_Position = vec4(position, 1.0);
         }
     `,
     fragmentShader: `
